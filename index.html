@@ -1410,23 +1410,21 @@
     <p class="section-eyebrow">Notre histoire</p>
     <h2 class="section-title">Née d'Alger,<br>faite pour <em>vous</em></h2>
     <p style="font-size:13px; line-height:2; color:var(--text-muted); margin-bottom:20px;">
-      Djawed Cosmétique est née en 2018 dans le cœur d'Alger, avec une vision simple : offrir aux femmes algériennes des soins premium formulés à partir des richesses naturelles de notre pays.
+      Djawed Cosmétique est née en 2026, avec une vision simple : offrir aux femmes algériennes des soins premium formulés à partir des richesses naturelles de notre pays.
     </p>
-    <p style="font-size:13px; line-height:2; color:var(--text-muted);">
-      De l'huile d'argan du Maghreb à la rose de Kabylie, chaque produit est une ode à la beauté authentique et à la générosité de la nature algérienne.
     </p>
     <div class="brand-stat-row">
       <div class="brand-stat">
-        <div class="brand-stat-num">7+</div>
+        <div class="brand-stat-num"> \(\infty \) </div>
         <div class="brand-stat-label">Années d'expertise</div>
       </div>
       <div class="brand-stat">
-        <div class="brand-stat-num">38</div>
-        <div class="brand-stat-label">Wilayas livrées</div>
+        <div class="brand-stat-num">69</div>
+        <div class="brand-stat-label">Wilayas pret a livrées</div>
       </div>
       <div class="brand-stat">
         <div class="brand-stat-num">12k</div>
-        <div class="brand-stat-label">Clientes satisfaites</div>
+        <div class="brand-stat-label">Clients satisfait</div>
       </div>
     </div>
   </div>
@@ -1479,7 +1477,7 @@
       <div class="footer-brand-name">Djawed</div>
       <div class="footer-brand-sub">Cosmétique — Alger</div>
       <p class="footer-desc">Des soins de beauté premium inspirés des trésors naturels algériens. Formulés avec passion, pour toutes les femmes.</p>
-      <div style="font-size:10px; color:rgba(200,169,110,0.5); letter-spacing:1px;">✦ 100% Naturel &nbsp; ✦ Halal Certifié &nbsp; ✦ Algérien</div>
+      <div style="font-size:10px; color:rgba(200,169,110,0.5); letter-spacing:1px;">✦ 100% Naturel &nbsp; ✦ qualité et prix &nbsp; ✦ Algérien</div>
     </div>
     <div>
       <p class="footer-col-title">Boutique</p>
@@ -1496,7 +1494,6 @@
       <ul class="footer-links">
         <li><a href="#">FAQ</a></li>
         <li><a href="#">Livraison</a></li>
-        <li><a href="#">Retours</a></li>
         <li><a href="#">Contactez-nous</a></li>
         <li><a href="#">Suivi commande</a></li>
       </ul>
@@ -1515,7 +1512,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p class="footer-copy">© 2025 Djawed Cosmétique · Tous droits réservés · Alger, Algérie</p>
+    <p class="footer-copy">© 2026 Djawed Cosmétique · Tous droits réservés · Alger, Algérie</p>
     <div class="footer-socials">
       <a class="social-link" href="#">Instagram</a>
       <a class="social-link" href="#">Facebook</a>
@@ -1528,45 +1525,7 @@
 <div class="notif" id="notif"></div>
 
 <script>
-  // Curseur personnalisé
-  const cursor = document.getElementById('cursor');
-  const ring = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX;
-    my = e.clientY;
-    cursor.style.left = mx + 'px';
-    cursor.style.top = my + 'px';
-  });
-
-  function animateRing() {
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.style.left = rx + 'px';
-    ring.style.top = ry + 'px';
-    requestAnimationFrame(animateRing);
-  }
-  animateRing();
-
-  document.querySelectorAll('a, button, .cat-card, .product-card').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.style.width = '20px';
-      cursor.style.height = '20px';
-      cursor.style.background = 'rgba(200,169,110,0.5)';
-      ring.style.width = '56px';
-      ring.style.height = '56px';
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.style.width = '10px';
-      cursor.style.height = '10px';
-      cursor.style.background = 'var(--gold)';
-      ring.style.width = '38px';
-      ring.style.height = '38px';
-    });
-  });
-
-  // Navbar au défilement
+ // Navbar au défilement
   const navbar = document.getElementById('navbar');
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 80);
@@ -1648,7 +1607,7 @@
       <div class="auth-success" id="regOk"></div>
       <div class="auth-field">
         <label>Prénom & Nom</label>
-        <input type="text" id="rName" placeholder="Amira Benali"/>
+        <input type="text" id="rName" placeholder="ton nom et prenom"/>
       </div>
       <div class="auth-field">
         <label>Adresse e-mail</label>

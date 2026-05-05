@@ -2633,12 +2633,12 @@ Djawed Cosmétique — Alger, Algérie
   } catch(err) {
     console.error('Erreur Web3Forms :', err);
     // Si la clé n'est pas encore configurée, on affiche quand même la confirmation (mode test)
-    if (WEB3FORMS_KEY === 'VOTRE_CLE_ICI') {
+    if (WEB3FORMS_KEY === 'ff07a541-744c-4e8c-9b1b-6acc103a40cb') {
       addOrderToUser(cart.map(i => i.name).join(', '), cart.reduce((s,i) => s+i.price*i.qty, 0));
       cart = [];
       updateCartBadge();
       document.getElementById('orderStep1').style.display = 'none';
-      document.getElementById('orderStep2').style.display = 'block';
+      document.getElementById('orderStep2').style.display = 'blocak';
       document.getElementById('orderConfirmRef').textContent = 'Référence : ' + ref + ' (mode test — configurez Web3Forms)';
       closeCart();
     } else {

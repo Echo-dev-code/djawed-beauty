@@ -2095,6 +2095,28 @@
           </select>
         </div>
       </div>
+
+      <!-- Photo upload -->
+      <div style="margin-bottom:20px;">
+        <label style="font-size:8px;letter-spacing:2px;color:rgba(200,169,110,0.7);text-transform:uppercase;display:block;margin-bottom:10px;">Photo du produit (optionnel)</label>
+        <div id="photoDropZone" onclick="document.getElementById('pPhoto').click()"
+          style="border:1px dashed rgba(200,169,110,0.3);padding:24px;text-align:center;cursor:pointer;transition:border-color 0.2s;position:relative;"
+          ondragover="event.preventDefault();this.style.borderColor='var(--gold)'"
+          ondragleave="this.style.borderColor='rgba(200,169,110,0.3)'"
+          ondrop="handlePhotoDrop(event)">
+          <input type="file" id="pPhoto" accept="image/*" style="display:none" onchange="handlePhotoSelect(event)"/>
+          <div id="photoPreview" style="display:none;margin-bottom:12px;">
+            <img id="photoPreviewImg" style="max-height:120px;max-width:100%;object-fit:contain;border:1px solid rgba(200,169,110,0.2);"/>
+          </div>
+          <div id="photoPlaceholder">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="margin-bottom:8px;opacity:0.4"><rect x="2" y="5" width="24" height="18" rx="2" stroke="#C8A96E" stroke-width="1.2" fill="none"/><circle cx="9" cy="11" r="2" stroke="#C8A96E" stroke-width="1.2" fill="none"/><path d="M2 18l6-5 4 4 4-3 10 6" stroke="#C8A96E" stroke-width="1.2" fill="none"/></svg>
+            <p style="font-size:10px;color:rgba(200,169,110,0.5);letter-spacing:1px;margin:0;">Cliquer ou glisser une photo ici</p>
+            <p style="font-size:9px;color:rgba(200,169,110,0.3);letter-spacing:1px;margin-top:4px;">JPG, PNG, WEBP — Max 5 Mo</p>
+          </div>
+          <div id="photoName" style="display:none;font-size:10px;color:var(--gold);letter-spacing:1px;margin-top:8px;"></div>
+        </div>
+        <button id="photoClearBtn" onclick="clearPhoto()" style="display:none;margin-top:8px;background:none;border:none;color:rgba(200,100,100,0.6);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;">✕ Supprimer la photo</button>
+      </div>
       <div id="adminFormError" style="display:none;font-size:10px;color:#e74c3c;letter-spacing:1px;margin-bottom:12px;">⚠ Veuillez remplir les champs obligatoires (*)</div>
       <button onclick="adminPublishProduct()" style="padding:13px 36px;background:var(--gold);color:var(--dark);border:none;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:600;">✦ Publier le produit</button>
     </div>
@@ -2139,6 +2161,47 @@
     document.getElementById('adminPanel').style.display = 'none';
   }
 
+  // Photo helpers
+  let currentPhotoBase64 = null;
+
+  function handlePhotoSelect(event) {
+    const file = event.target.files[0];
+    if (file) loadPhoto(file);
+  }
+
+  function handlePhotoDrop(event) {
+    event.preventDefault();
+    document.getElementById('photoDropZone').style.borderColor = 'rgba(200,169,110,0.3)';
+    const file = event.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadPhoto(file);
+  }
+
+  function loadPhoto(file) {
+    if (file.size > 5 * 1024 * 1024) { showNotif('Photo trop grande (max 5 Mo)'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      currentPhotoBase64 = e.target.result;
+      document.getElementById('photoPreviewImg').src = currentPhotoBase64;
+      document.getElementById('photoPreview').style.display = 'block';
+      document.getElementById('photoPlaceholder').style.display = 'none';
+      document.getElementById('photoName').style.display = 'block';
+      document.getElementById('photoName').textContent = file.name;
+      document.getElementById('photoClearBtn').style.display = 'inline-block';
+      document.getElementById('photoDropZone').style.borderColor = 'var(--gold)';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearPhoto() {
+    currentPhotoBase64 = null;
+    document.getElementById('pPhoto').value = '';
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('photoPlaceholder').style.display = 'block';
+    document.getElementById('photoName').style.display = 'none';
+    document.getElementById('photoClearBtn').style.display = 'none';
+    document.getElementById('photoDropZone').style.borderColor = 'rgba(200,169,110,0.3)';
+  }
+
   function adminPublishProduct() {
     const name     = document.getElementById('pName').value.trim();
     const category = document.getElementById('pCategory').value;
@@ -2146,6 +2209,7 @@
     const variant  = document.getElementById('pVariant').value.trim();
     const badge    = document.getElementById('pBadge').value;
     const color    = document.getElementById('pColor').value;
+    const photo    = currentPhotoBase64 || null;
 
     if (!name || !price) {
       document.getElementById('adminFormError').style.display = 'block';
@@ -2154,7 +2218,7 @@
     document.getElementById('adminFormError').style.display = 'none';
 
     const newId = Date.now();
-    const product = { id: newId, name, category, price, variant, badge, color };
+    const product = { id: newId, name, category, price, variant, badge, color, photo };
     adminProducts.push(product);
     saveAdminProducts();
 
@@ -2162,9 +2226,11 @@
     ALL_PRODUCTS.push(product);
 
     renderAdminList();
+    // Reset form
     document.getElementById('pName').value    = '';
     document.getElementById('pPrice').value   = '';
     document.getElementById('pVariant').value = '';
+    clearPhoto();
     showNotif('✦ "' + name + '" publié avec succès !');
   }
 
@@ -2205,11 +2271,17 @@
     }
 
     list.innerHTML = all.map(p => `
-      <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border:1px solid rgba(200,169,110,0.12);padding:16px 20px;gap:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border:1px solid rgba(200,169,110,0.12);padding:14px 20px;gap:16px;">
+        <div style="width:48px;height:48px;flex-shrink:0;border-radius:2px;overflow:hidden;background:linear-gradient(135deg,${p.color||'#C8A96E'}33,${p.color||'#C8A96E'});">
+          ${p.photo
+            ? `<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;"/>`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:16px;color:rgba(26,18,8,0.4);font-style:italic;">D</div>`
+          }
+        </div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
             <p style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</p>
-            <span style="font-size:8px;padding:2px 8px;border:1px solid rgba(200,169,110,0.3);color:var(--gold);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">${p.badge || ''}</span>
+            ${p.badge ? `<span style="font-size:8px;padding:2px 8px;border:1px solid rgba(200,169,110,0.3);color:var(--gold);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;">${p.badge}</span>` : ''}
           </div>
           <p style="font-size:9px;color:rgba(200,169,110,0.5);letter-spacing:1.5px;text-transform:uppercase;">
             ${p.category} · ${Number(p.price).toLocaleString('fr-DZ')} DA${p.variant ? ' · ' + p.variant : ''}

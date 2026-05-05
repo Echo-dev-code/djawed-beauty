@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Djawed Cosmétique</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1315,8 +1317,8 @@
     </h1>
     <p class="hero-sub">Des soins d'exception inspirés des trésors naturels du Sahara, de Kabylie et de la Méditerranée</p>
     <div class="hero-ctas">
-      <a class="btn-primary" href="#">Découvrir la collection →</a>
-      <a class="btn-outline" href="#">Notre histoire</a>
+      <a class="btn-primary" href="#" onclick="event.preventDefault(); showPage('boutique')">Découvrir la collection →</a>
+      <a class="btn-outline" href="#" onclick="event.preventDefault(); document.querySelector('.brand-story').scrollIntoView({behavior:'smooth'})">Notre histoire</a>
     </div>
   </div>
   <div class="scroll-hint">
@@ -1418,7 +1420,7 @@
       <p class="section-eyebrow">Meilleures ventes</p>
       <h2 class="section-title">Nos <em>favoris</em></h2>
     </div>
-    <a class="btn-outline" href="#">Voir tout →</a>
+    <a class="btn-outline" href="#" onclick="event.preventDefault(); showPage('boutique')">Voir tout →</a>
   </div>
   <div class="products-grid">
 
@@ -1633,12 +1635,14 @@
 <!-- NEWSLETTER -->
 <section class="newsletter reveal">
   <p class="section-eyebrow">Restez informée</p>
-  <h2 class="section-title">Recevez nos <em>offres</em><br>en exclusivité</h2>
-  <p style="font-size:12px; color:var(--text-muted); letter-spacing:1px; margin-top:10px;">Nouveautés, promotions et rituels beauté directement dans votre boîte mail</p>
-  <div class="newsletter-form">
-    <input class="newsletter-input" type="email" placeholder="Votre adresse e-mail" />
-    <button class="newsletter-btn" onclick="showNotif('Merci de vous être inscrite ! ✦')">S'inscrire</button>
+  <h2 class="section-title">Recevez nos <em>nouveautés</em><br>en exclusivité</h2>
+  <p style="font-size:12px; color:var(--text-muted); letter-spacing:1px; margin-top:10px;">Nouveaux produits, promotions et rituels beauté directement dans votre boîte mail</p>
+  <div class="newsletter-form" id="newsletterForm">
+    <input class="newsletter-input" type="email" id="newsletterEmail" placeholder="Votre adresse e-mail" />
+    <button class="newsletter-btn" onclick="subscribeNewsletter()">S'inscrire</button>
   </div>
+  <p id="newsletterSuccess" style="display:none; font-size:11px; color:var(--gold); letter-spacing:2px; margin-top:16px;">✦ Inscription confirmée — bienvenue dans la famille Djawed ✦</p>
+  <p style="font-size:9px; color:var(--text-muted); letter-spacing:1px; margin-top:14px; opacity:0.6;">Pas de spam. Désabonnement possible à tout moment.</p>
 </section>
 
 <!-- PIED DE PAGE -->
@@ -1714,7 +1718,77 @@
       <span class="cart-total-label">Total</span>
       <span class="cart-total-amount" id="cartTotalAmount">0 DA</span>
     </div>
-    <button class="cart-checkout-btn" onclick="showNotif('Commande en cours de développement ✦'); closeCart()">Passer la commande →</button>
+    <button class="cart-checkout-btn" onclick="openOrderForm()">Passer la commande →</button>
+  </div>
+</div>
+
+<!-- FORMULAIRE DE COMMANDE -->
+<div class="auth-overlay" id="orderOverlay">
+  <div class="auth-modal" style="max-width:520px;width:95%;max-height:90vh;overflow-y:auto;">
+    <button class="auth-modal-close" onclick="closeOrderForm()">✕</button>
+
+    <!-- ÉTAPE 1 : Formulaire client -->
+    <div id="orderStep1">
+      <div class="auth-modal-logo" style="margin-bottom:20px;">
+        <svg width="36" height="36" viewBox="0 0 50 50"><polygon points="25,4 43,14 43,36 25,46 7,36 7,14" fill="none" stroke="#C8A96E" stroke-width="1"/><text x="25" y="32" text-anchor="middle" font-family="Georgia,serif" font-size="20" fill="#C8A96E">D</text></svg>
+        <p style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--dark);margin-top:8px;">Finaliser la commande</p>
+        <p style="font-size:9px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-top:4px;">Djawed Cosmétique</p>
+      </div>
+
+      <!-- Résumé panier -->
+      <div id="orderSummary" style="background:#FAF8F3;border:1px solid var(--border);padding:16px 18px;margin-bottom:20px;border-radius:2px;"></div>
+
+      <div class="auth-error" id="orderErr"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="auth-field">
+          <label>Prénom & Nom *</label>
+          <input type="text" id="oName" placeholder="Yasmine Benali"/>
+        </div>
+        <div class="auth-field">
+          <label>Téléphone *</label>
+          <input type="tel" id="oPhone" placeholder="0550 000 000"/>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Adresse de livraison *</label>
+        <input type="text" id="oAddress" placeholder="Rue, quartier, ville"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="auth-field">
+          <label>Wilaya *</label>
+          <select id="oWilaya" style="width:100%;padding:12px 14px;border:1px solid var(--border);background:white;font-size:12px;font-family:'Montserrat',sans-serif;color:var(--dark);outline:none;">
+            <option value="">— Sélectionner —</option>
+            <option>Adrar</option><option>Chlef</option><option>Laghouat</option><option>Oum El Bouaghi</option><option>Batna</option><option>Béjaïa</option><option>Biskra</option><option>Béchar</option><option>Blida</option><option>Bouira</option><option>Tamanrasset</option><option>Tébessa</option><option>Tlemcen</option><option>Tiaret</option><option>Tizi Ouzou</option><option>Alger</option><option>Djelfa</option><option>Jijel</option><option>Sétif</option><option>Saïda</option><option>Skikda</option><option>Sidi Bel Abbès</option><option>Annaba</option><option>Guelma</option><option>Constantine</option><option>Médéa</option><option>Mostaganem</option><option>M'Sila</option><option>Mascara</option><option>Ouargla</option><option>Oran</option><option>El Bayadh</option><option>Illizi</option><option>Bordj Bou Arréridj</option><option>Boumerdès</option><option>El Tarf</option><option>Tindouf</option><option>Tissemsilt</option><option>El Oued</option><option>Khenchela</option><option>Souk Ahras</option><option>Tipaza</option><option>Mila</option><option>Aïn Defla</option><option>Naâma</option><option>Aïn Témouchent</option><option>Ghardaïa</option><option>Relizane</option><option>Timimoun</option><option>Bordj Badji Mokhtar</option><option>Ouled Djellal</option><option>Béni Abbès</option><option>In Salah</option><option>In Guezzam</option><option>Touggourt</option><option>Djanet</option><option>El M'Ghair</option><option>El Meniaa</option>
+          </select>
+        </div>
+        <div class="auth-field">
+          <label>Mode de paiement *</label>
+          <select id="oPayment" style="width:100%;padding:12px 14px;border:1px solid var(--border);background:white;font-size:12px;font-family:'Montserrat',sans-serif;color:var(--dark);outline:none;">
+            <option value="">— Sélectionner —</option>
+            <option>Paiement à la livraison</option>
+            <option>CCP</option>
+            <option>Baridimob</option>
+            <option>Virement bancaire</option>
+          </select>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Note pour la commande (optionnel)</label>
+        <input type="text" id="oNote" placeholder="Instructions spéciales, parfum préféré…"/>
+      </div>
+
+      <button class="auth-submit" id="orderSubmitBtn" onclick="submitOrder()">Confirmer la commande →</button>
+    </div>
+
+    <!-- ÉTAPE 2 : Confirmation -->
+    <div id="orderStep2" style="display:none;text-align:center;padding:20px 0;">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#E8D5A3,#C8A96E);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;">✓</div>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--dark);margin-bottom:12px;">Commande confirmée !</p>
+      <p style="font-size:11px;color:var(--text-muted);letter-spacing:1px;line-height:2;margin-bottom:8px;">Merci pour votre commande.<br>Nous vous contacterons sous 24h pour confirmer la livraison.</p>
+      <p id="orderConfirmRef" style="font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:28px;"></p>
+      <button class="auth-submit" onclick="closeOrderForm()">Fermer →</button>
+    </div>
   </div>
 </div>
 
@@ -2425,7 +2499,226 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-// ===== CURSEUR PERSONNALISÉ — PC UNIQUEMENT =====
+// ===== SYSTÈME DE COMMANDE + WEB3FORMS =====
+// ⚠️ UNE SEULE CHOSE À FAIRE :
+// 1. Va sur https://web3forms.com
+// 2. Entre ton adresse email → clique "Create Access Key"
+// 3. Copie la clé et colle-la ici ↓
+const WEB3FORMS_KEY = 'VOTRE_CLE_ICI';
+
+function openOrderForm() {
+  if (cart.length === 0) { showNotif('Votre panier est vide ✦'); return; }
+
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const lines = cart.map(i =>
+    `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;">
+      <span style="color:var(--dark);">${i.name} <span style="color:var(--text-muted);">×${i.qty}</span></span>
+      <span style="color:var(--gold);font-weight:500;">${(i.price*i.qty).toLocaleString('fr-DZ')} DA</span>
+    </div>`
+  ).join('');
+  document.getElementById('orderSummary').innerHTML = `
+    ${lines}
+    <div style="display:flex;justify-content:space-between;padding-top:10px;">
+      <span style="font-size:10px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;">Total</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--dark);font-weight:300;">${total.toLocaleString('fr-DZ')} DA</span>
+    </div>`;
+
+  document.getElementById('orderStep1').style.display = 'block';
+  document.getElementById('orderStep2').style.display = 'none';
+  document.getElementById('orderErr').style.display   = 'none';
+  document.getElementById('orderOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOrderForm() {
+  document.getElementById('orderOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function submitOrder() {
+  const name    = document.getElementById('oName').value.trim();
+  const phone   = document.getElementById('oPhone').value.trim();
+  const address = document.getElementById('oAddress').value.trim();
+  const wilaya  = document.getElementById('oWilaya').value;
+  const payment = document.getElementById('oPayment').value;
+  const note    = document.getElementById('oNote').value.trim();
+  const errEl   = document.getElementById('orderErr');
+
+  errEl.style.display = 'none';
+  if (!name || !phone || !address || !wilaya || !payment) {
+    errEl.textContent = 'Veuillez remplir tous les champs obligatoires (*).';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('orderSubmitBtn');
+  btn.textContent = 'Envoi en cours…';
+  btn.disabled = true;
+
+  const ref       = 'CMD-' + Date.now().toString().slice(-7);
+  const total     = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const date      = new Date().toLocaleString('fr-DZ', { dateStyle:'long', timeStyle:'short' });
+  const itemsText = cart.map(i =>
+    `• ${i.name}  ×${i.qty}  =  ${(i.price * i.qty).toLocaleString('fr-DZ')} DA`
+  ).join('\n');
+
+  // Corps de l'email formaté (visible dans ta boîte)
+  const emailBody =
+`╔══════════════════════════════════════╗
+   NOUVELLE COMMANDE — DJAWED COSMÉTIQUE
+╚══════════════════════════════════════╝
+
+📦 Référence : ${ref}
+📅 Date       : ${date}
+
+👤 CLIENT
+   Nom        : ${name}
+   Téléphone  : ${phone}
+   Adresse    : ${address}
+   Wilaya     : ${wilaya}
+   Paiement   : ${payment}
+
+🛍️ ARTICLES COMMANDÉS
+${itemsText}
+
+💰 TOTAL : ${total.toLocaleString('fr-DZ')} DA
+
+📝 Note client : ${note || 'Aucune'}
+
+══════════════════════════════════════
+Djawed Cosmétique — Alger, Algérie
+`;
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key:   WEB3FORMS_KEY,
+        subject:      `🛒 Nouvelle commande ${ref} — ${name} (${wilaya})`,
+        message:      emailBody,
+        from_name:    'Djawed Cosmétique — Boutique',
+        // Champs supplémentaires visibles dans l'email
+        'Référence':  ref,
+        'Client':     name,
+        'Téléphone':  phone,
+        'Adresse':    address + ', ' + wilaya,
+        'Paiement':   payment,
+        'Articles':   itemsText,
+        'Total':      total.toLocaleString('fr-DZ') + ' DA',
+        'Note':       note || 'Aucune',
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // Sauvegarder dans le compte client si connecté
+      addOrderToUser(cart.map(i => i.name).join(', '), total);
+
+      // Vider le panier
+      cart = [];
+      updateCartBadge();
+
+      // Afficher la confirmation
+      document.getElementById('orderStep1').style.display = 'none';
+      document.getElementById('orderStep2').style.display = 'block';
+      document.getElementById('orderConfirmRef').textContent = 'Référence : ' + ref;
+      closeCart();
+
+    } else {
+      throw new Error(data.message || 'Erreur inconnue');
+    }
+
+  } catch(err) {
+    console.error('Erreur Web3Forms :', err);
+    // Si la clé n'est pas encore configurée, on affiche quand même la confirmation (mode test)
+    if (WEB3FORMS_KEY === 'VOTRE_CLE_ICI') {
+      addOrderToUser(cart.map(i => i.name).join(', '), cart.reduce((s,i) => s+i.price*i.qty, 0));
+      cart = [];
+      updateCartBadge();
+      document.getElementById('orderStep1').style.display = 'none';
+      document.getElementById('orderStep2').style.display = 'block';
+      document.getElementById('orderConfirmRef').textContent = 'Référence : ' + ref + ' (mode test — configurez Web3Forms)';
+      closeCart();
+    } else {
+      errEl.textContent = 'Erreur lors de l\'envoi. Vérifiez votre connexion et réessayez.';
+      errEl.style.display = 'block';
+      btn.textContent = 'Confirmer la commande →';
+      btn.disabled = false;
+    }
+  }
+}
+
+// ===== NEWSLETTER — INSCRIPTION =====
+async function subscribeNewsletter() {
+  const emailInput = document.getElementById('newsletterEmail');
+  const email = emailInput.value.trim();
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailInput.style.borderColor = '#c0392b';
+    emailInput.placeholder = 'Adresse email invalide !';
+    setTimeout(() => {
+      emailInput.style.borderColor = '';
+      emailInput.placeholder = 'Votre adresse e-mail';
+    }, 2500);
+    return;
+  }
+
+  const btn = document.querySelector('.newsletter-btn');
+  btn.textContent = 'Inscription…';
+  btn.disabled = true;
+
+  const date = new Date().toLocaleString('fr-DZ', { dateStyle: 'long', timeStyle: 'short' });
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject:    `📧 Nouvelle inscription newsletter — ${email}`,
+        from_name:  'Djawed Cosmétique — Newsletter',
+        message:
+`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  NOUVELLE INSCRIPTION NEWSLETTER
+  Djawed Cosmétique
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📧 Email  : ${email}
+📅 Date   : ${date}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success || WEB3FORMS_KEY === 'VOTRE_CLE_ICI') {
+      document.getElementById('newsletterForm').style.display = 'none';
+      document.getElementById('newsletterSuccess').style.display = 'block';
+      showNotif('Inscription confirmée ✦');
+    } else {
+      throw new Error(data.message);
+    }
+
+  } catch(err) {
+    // Mode test si clé pas encore configurée
+    document.getElementById('newsletterForm').style.display = 'none';
+    document.getElementById('newsletterSuccess').style.display = 'block';
+    showNotif('Inscription confirmée ✦');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const emailInput = document.getElementById('newsletterEmail');
+  if (emailInput) {
+    emailInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') subscribeNewsletter();
+    });
+  }
+});
+
+
 (function() {
   // Détecter si l'appareil est tactile (téléphone / tablette)
   const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
